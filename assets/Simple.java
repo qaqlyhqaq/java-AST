@@ -1,9 +1,9 @@
 //ignore commentary
 class Main {
-        //注释字段
-        //注释字段
-        //注释字段
-        //注释字段
+        //注释字段1
+        //注释字段2
+        //注释字段3
+        //注释字段4
         @asd("asdfasdf")
         private int a;
         @asd(value = "asdasd")

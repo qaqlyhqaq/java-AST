@@ -10,20 +10,6 @@ use nom::Parser;
 use nom::{AsChar, IResult};
 
 fn main() {
-    let source_code = r#"
-    //ignore commentary
-    class Main {
-        //注释字段
-        //注释字段
-        //注释字段
-        //注释字段
-        @asd(asdfasdf)
-        private int a;
-        @asd
-        int a;
-    }
-    花括号以后
-    "#;
 
     let source_code = include_str!("../assets/Simple.java");
 
@@ -45,7 +31,7 @@ fn main() {
     //分隔符,提取
     let (source_code, _) =
         take_while1::<_, &str, nom::error::Error<&str>>(AsChar::is_space)(source_code).unwrap();
-    println!("body:{}", &source_code);
+    // println!("body:{}", &source_code);
 
     //提取正文内容
     //单行注释区分
@@ -120,6 +106,6 @@ fn main() {
         end_while,
     )
     .parse(source_code);
-    dbg!(&res);
-    // println!("parse content:{}", res.unwrap().1);
+    // dbg!(&res);
+    res.unwrap().1.iter().for_each(|x| println!("{}", x));
 }
