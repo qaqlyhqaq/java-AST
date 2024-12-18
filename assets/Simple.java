@@ -1,5 +1,9 @@
 //ignore commentary
 class Main {
+        /*
+        注释1
+        注释2
+        */
         //注释字段1
         //注释字段2
         //注释字段3

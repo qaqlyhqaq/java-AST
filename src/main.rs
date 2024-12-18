@@ -1,11 +1,12 @@
 #![feature(str_as_str)]
 
 use nom::branch::alt;
-use nom::bytes::streaming::{tag, take_until, take_while1};
+use nom::bytes::complete::take_until;
+use nom::bytes::streaming::{tag,take_while1};
 use nom::bytes::take_while;
 use nom::combinator::{map, opt};
 use nom::multi::many1;
-use nom::sequence::{delimited, preceded, terminated};
+use nom::sequence::{delimited, pair, preceded, terminated};
 use nom::Parser;
 use nom::{AsChar, IResult};
 
@@ -13,6 +14,7 @@ use nom::{AsChar, IResult};
 fn main() {
 
     let source_code = include_str!("../assets/Simple.java");
+    // let source_code = include_str!("../assets/MultiLine.java");
 
     //查找到class 标识
     let (source_code, _) =
@@ -84,7 +86,14 @@ fn main() {
         return format!("查找到一属性值:{:?}",element).leak().as_str();
     });
 
-    let body_content_parser = nom::multi::many0(alt((body_content_parser_2,body_content_parser, body_content_parser_1)));
+
+    let preceded2 = preceded(take_while(|a|{return AsChar::is_space(a)||AsChar::is_newline(a);}), delimited(nom::bytes::complete::tag::<&str, &str, nom::error::Error<&str>>("/*"), nom::bytes::complete::take_until1("*/"),tag("*/")));
+    let preceded2 = map(preceded2, |a|{
+        return format!("解析多行注释:{}",a.trim()).leak().as_str();
+    });
+
+
+    let body_content_parser = nom::multi::many0(alt((preceded2,body_content_parser_2,body_content_parser, body_content_parser_1)));
 
     //去头尾{}  解析模式
     // let body_content_parser = take_until::<&str, &str, nom::error::Error<&str>>("}");
@@ -95,7 +104,7 @@ fn main() {
         terminated(
         body_content_parser,
         tag("}")),
-        end_while,
+        opt(end_while),
     )
     .parse(source_code);
     // dbg!(&res);
