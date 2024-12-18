@@ -25,6 +25,8 @@ fn main() {
     花括号以后
     "#;
 
+    let source_code = include_str!("../assets/Simple.java");
+
     //查找到main 标识
     let (source_code, discern) =
         take_until::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();
@@ -64,14 +66,14 @@ fn main() {
     //匹配类属性声明字段
     //去除开头空白
     let take_while2 = nom::bytes::complete::take_while::<_, &str, nom::error::Error<_>>(|x2| {
-        if x2.is_space() || x2.eq(&'\n'){
+        if x2.is_space() || x2.eq(&'\n') || x2.eq(&'\r'){
             return true;
         }
         return false;
     });
 
     let take_while3 = nom::bytes::complete::take_while::<_, &str, nom::error::Error<_>>(|x2| {
-        if x2.is_space() || x2.eq(&'\n'){
+        if x2.is_space() || x2.eq(&'\n' ) || x2.eq(&'\r') {
             return true;
         }
         return false;
@@ -82,13 +84,16 @@ fn main() {
         (
         //属性注解声明
         opt(many1(
+            preceded(take_while(AsChar::is_space),
                 delimited(
                     nom::bytes::complete::tag("@"),
                     terminated(
                         (take_while1(AsChar::is_alphanum),
                                           opt(delimited(nom::bytes::complete::tag("("),opt(nom::bytes::complete::take_until(")")),nom::bytes::complete::tag(")")))),take_while(AsChar::is_space))
-                    ,opt(nom::bytes::complete::tag("\n")))
-           )),
+                    ,opt(alt((nom::bytes::complete::tag("\r\n"),nom::bytes::complete::tag("\n")))))
+           )
+        )
+        ),
         //可见声明
         opt(delimited(opt(nom::bytes::complete::take_while1(AsChar::is_space)),visit_declare, nom::bytes::complete::take_while1(AsChar::is_space),)),
         //属性类型
