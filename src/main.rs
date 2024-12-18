@@ -9,16 +9,15 @@ use nom::sequence::{delimited, preceded, terminated};
 use nom::Parser;
 use nom::{AsChar, IResult};
 
+
 fn main() {
 
     let source_code = include_str!("../assets/Simple.java");
 
-    //查找到main 标识
-    let (source_code, discern) =
+    //查找到class 标识
+    let (source_code, _) =
         take_until::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();
-    //打印暂时无效上下文
-    println!("{}", discern);
-    //解析main 结构体类
+    //解析class 结构体类
     let (source_code, _) =
         tag::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();
     //判断是否有分隔符,语法检查
@@ -28,10 +27,9 @@ fn main() {
     let (source_code, class_name) =
         take_while1::<_, &str, nom::error::Error<&str>>(AsChar::is_alphanum)(source_code).unwrap();
     println!("class_name:{}", class_name);
-    //分隔符,提取
+    //去除无效空行
     let (source_code, _) =
         take_while1::<_, &str, nom::error::Error<&str>>(AsChar::is_space)(source_code).unwrap();
-    // println!("body:{}", &source_code);
 
     //提取正文内容
     //单行注释区分
@@ -58,12 +56,6 @@ fn main() {
         return false;
     });
 
-    let take_while3 = nom::bytes::complete::take_while::<_, &str, nom::error::Error<_>>(|x2| {
-        if x2.is_space() || x2.eq(&'\n' ) || x2.eq(&'\r') {
-            return true;
-        }
-        return false;
-    });
     //标记字段  public 或 private
     let visit_declare = alt((nom::bytes::complete::tag::<&str, &str, nom::error::Error<&str>>("public"), nom::bytes::complete::tag("private")));
     let class_body_content =
