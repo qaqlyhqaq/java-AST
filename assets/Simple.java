@@ -1,5 +1,5 @@
-    //ignore commentary
-    class Main {
+//ignore commentary
+class Main {
         //注释字段
         //注释字段
         //注释字段
@@ -10,5 +10,5 @@
         @a2("asdasd")
         @a3("asdasd")
         int a;
-    }
-    花括号以后
+}
+花括号以后......
