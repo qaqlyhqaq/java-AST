@@ -2,8 +2,8 @@ use nom::Parser;
 use nom::branch::alt;
 use nom::bytes::streaming::{tag, take_until, take_while1};
 use nom::bytes::{tag_no_case, take_while};
-use nom::combinator::rest;
-use nom::sequence::{delimited, preceded, terminated};
+use nom::combinator::{map, map_opt, opt, rest};
+use nom::sequence::{delimited, preceded, terminated, tuple};
 use nom::{AsChar, IResult};
 
 fn main() {
@@ -49,16 +49,35 @@ fn main() {
             until,
         ),
     );
-    // let body_content_parser = terminated(preceded1,nom::bytes::complete::take_until::<&str, &str, nom::error::Error<&str>>("}"));
     let body_content_parser = preceded1;
-    let body_content_parser_1 =
-        // terminated(
-        nom::bytes::complete::take_until1::<&str, &str, nom::error::Error<&str>>("}")
-    //     ,rest,
-    // )
-    ;
+    //直接匹配结尾
+    let body_content_parser_1 =nom::bytes::complete::take_until1::<&str, &str, nom::error::Error<&str>>("}");
+    //匹配类属性声明字段
+    //去除开头空白
+    let take_while2 = nom::bytes::complete::take_while::<_, &str, nom::error::Error<_>>(|x2| {
+        if x2.is_space() || x2.eq(&'\n'){
+            return true;
+        }
+        return false;
+    });
+    //标记字段  public 或 private
+    let visit_declare = alt((nom::bytes::complete::tag::<&str, &str, nom::error::Error<&str>>("public"), nom::bytes::complete::tag("private")));
+    let x = tuple((
+        //可见声明
+        terminated(visit_declare, nom::bytes::complete::take_while1(AsChar::is_space), ),
+        //属性类型
+        terminated(nom::bytes::complete::take_while1(AsChar::is_alphanum), nom::bytes::complete::take_while1(AsChar::is_space), ),
+        //属性标识名称
+        nom::bytes::complete::take_while1(AsChar::is_alphanum),
+        //分号
+        nom::bytes::complete::tag(";"))
+    );
+    let body_content_parser_2 = map(preceded(take_while2, x),|x1| {return "查找到一属性值";});
 
-    let body_content_parser = nom::multi::many0(alt((body_content_parser, body_content_parser_1)));
+
+    // nom::multi::many0(body_content_parser_2);
+
+    let body_content_parser = nom::multi::many0(alt((body_content_parser_2,body_content_parser, body_content_parser_1)));
 
     //去头尾{}  解析模式
     // let body_content_parser = take_until::<&str, &str, nom::error::Error<&str>>("}");
