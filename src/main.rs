@@ -8,7 +8,8 @@ fn main() {
     let source_code = r#"
     //ignore commentary
     class Main {
-         主类内容
+        //声明语句
+         private int a;
     }
     "#;
 
