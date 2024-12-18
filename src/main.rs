@@ -1,7 +1,10 @@
+use nom::bytes::streaming::{tag, take_until, take_while1};
 use nom::AsChar;
-use nom::bytes::streaming::{tag, take_until, take_until1, take_while1};
-use nom::character::streaming::char;
-
+use nom::branch::alt;
+use nom::bytes::{tag_no_case, take_while};
+use nom::combinator::rest;
+use nom::sequence::{delimited, terminated};
+use nom::Parser;
 
 fn main() {
 
@@ -11,6 +14,8 @@ fn main() {
         //声明语句
          private int a;
     }
+
+
     "#;
 
     //查找到main 标识
@@ -26,5 +31,12 @@ fn main() {
     println!("class_name:{}", class_name);
     //分隔符,提取
     let (source_code, _) = take_while1::<_, &str, nom::error::Error<&str>>(AsChar::is_space)(source_code).unwrap();
-    println!("body:{}",source_code);
+    println!("body:{}",&source_code);
+    //提取正文内容,去头尾{}  解析模式
+    let body_content_parser = take_until::<&str, &str, nom::error::Error<&str>>("}");
+    let take_while2 = take_while(AsChar::is_space);
+    let res = delimited(tag("{"), terminated(body_content_parser, tag("}")),take_while2).parse(source_code);
+    dbg!(&res);
+    println!("parse content:{}", res.unwrap().1);
+
 }
