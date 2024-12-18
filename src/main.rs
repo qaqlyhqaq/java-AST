@@ -1,12 +1,14 @@
 #![feature(str_as_str)]
 
+use std::fmt::format;
 use nom::Parser;
 use nom::branch::alt;
 use nom::bytes::streaming::{tag, take_until, take_while1};
 use nom::bytes::{tag_no_case, take_while};
-use nom::combinator::{map, map_opt, opt, rest};
+use nom::combinator::{map, map_opt, opt, rest, Opt};
 use nom::sequence::{delimited, preceded, terminated, tuple};
 use nom::{AsChar, IResult};
+use nom::multi::{many0, many1};
 
 fn main() {
     let source_code = r#"
@@ -16,8 +18,10 @@ fn main() {
         //注释字段
         //注释字段
         //注释字段
+        @asd(asdfasdf)
         private int a;
-        int b;
+        @asd
+        int a;
     }
     花括号以后
     "#;
@@ -53,6 +57,9 @@ fn main() {
         ),
     );
     let body_content_parser = preceded1;
+    let body_content_parser = map(body_content_parser,|x| {
+        return format!("查找到一条注释:{}",x).leak().as_str();
+    });
     //直接匹配结尾
     let body_content_parser_1 =nom::bytes::complete::take_until1::<&str, &str, nom::error::Error<&str>>("}");
     //匹配类属性声明字段
@@ -63,18 +70,35 @@ fn main() {
         }
         return false;
     });
+
+    let take_while3 = nom::bytes::complete::take_while::<_, &str, nom::error::Error<_>>(|x2| {
+        if x2.is_space() || x2.eq(&'\n'){
+            return true;
+        }
+        return false;
+    });
     //标记字段  public 或 private
     let visit_declare = alt((nom::bytes::complete::tag::<&str, &str, nom::error::Error<&str>>("public"), nom::bytes::complete::tag("private")));
-    let x = (
+    let class_body_content =
+        (
+        //属性注解声明
+        opt(many1(
+                delimited(
+                    nom::bytes::complete::tag("@"),
+                    terminated(
+                        (take_while1(AsChar::is_alphanum),
+                                          opt(delimited(nom::bytes::complete::tag("("),opt(nom::bytes::complete::take_until(")")),nom::bytes::complete::tag(")")))),take_while(AsChar::is_space))
+                    ,opt(nom::bytes::complete::tag("\n")))
+           )),
         //可见声明
-        opt(terminated(visit_declare, nom::bytes::complete::take_while1(AsChar::is_space), )),
+        opt(delimited(opt(nom::bytes::complete::take_while1(AsChar::is_space)),visit_declare, nom::bytes::complete::take_while1(AsChar::is_space),)),
         //属性类型
-        terminated(nom::bytes::complete::take_while1(AsChar::is_alphanum), nom::bytes::complete::take_while1(AsChar::is_space), ),
+        delimited(opt(nom::bytes::complete::take_while1(AsChar::is_space)),nom::bytes::complete::take_while1(AsChar::is_alphanum), nom::bytes::complete::take_while1(AsChar::is_space), ),
         //属性标识名称
         //分号
         terminated( nom::bytes::complete::take_while1(AsChar::is_alphanum),nom::bytes::complete::tag(";")),
     );
-    let body_content_parser_2 = map(preceded(take_while2, x),|element| {
+    let body_content_parser_2 = map(preceded(take_while2, class_body_content), |element| {
         return format!("查找到一属性值:{:?}",element).leak().as_str();
     });
 
