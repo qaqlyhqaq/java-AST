@@ -1,3 +1,5 @@
+#![feature(str_as_str)]
+
 use nom::Parser;
 use nom::branch::alt;
 use nom::bytes::streaming::{tag, take_until, take_while1};
@@ -15,6 +17,7 @@ fn main() {
         //注释字段
         //注释字段
         private int a;
+        int b;
     }
     花括号以后
     "#;
@@ -62,20 +65,18 @@ fn main() {
     });
     //标记字段  public 或 private
     let visit_declare = alt((nom::bytes::complete::tag::<&str, &str, nom::error::Error<&str>>("public"), nom::bytes::complete::tag("private")));
-    let x = tuple((
+    let x = (
         //可见声明
-        terminated(visit_declare, nom::bytes::complete::take_while1(AsChar::is_space), ),
+        opt(terminated(visit_declare, nom::bytes::complete::take_while1(AsChar::is_space), )),
         //属性类型
         terminated(nom::bytes::complete::take_while1(AsChar::is_alphanum), nom::bytes::complete::take_while1(AsChar::is_space), ),
         //属性标识名称
-        nom::bytes::complete::take_while1(AsChar::is_alphanum),
         //分号
-        nom::bytes::complete::tag(";"))
+        terminated( nom::bytes::complete::take_while1(AsChar::is_alphanum),nom::bytes::complete::tag(";")),
     );
-    let body_content_parser_2 = map(preceded(take_while2, x),|x1| {return "查找到一属性值";});
-
-
-    // nom::multi::many0(body_content_parser_2);
+    let body_content_parser_2 = map(preceded(take_while2, x),|element| {
+        return format!("查找到一属性值:{:?}",element).leak().as_str();
+    });
 
     let body_content_parser = nom::multi::many0(alt((body_content_parser_2,body_content_parser, body_content_parser_1)));
 
