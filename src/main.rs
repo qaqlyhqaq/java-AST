@@ -1,14 +1,13 @@
 #![feature(str_as_str)]
 
-use std::fmt::format;
-use nom::Parser;
 use nom::branch::alt;
 use nom::bytes::streaming::{tag, take_until, take_while1};
-use nom::bytes::{tag_no_case, take_while};
-use nom::combinator::{map, map_opt, opt, rest, Opt};
-use nom::sequence::{delimited, preceded, terminated, tuple};
+use nom::bytes::take_while;
+use nom::combinator::{map, opt};
+use nom::multi::many1;
+use nom::sequence::{delimited, preceded, terminated};
+use nom::Parser;
 use nom::{AsChar, IResult};
-use nom::multi::{many0, many1};
 
 fn main() {
     let source_code = r#"
