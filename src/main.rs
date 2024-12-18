@@ -95,17 +95,3 @@ fn main() {
     dbg!(&res);
     // println!("parse content:{}", res.unwrap().1);
 }
-#[cfg(test)]
-mod tests {
-    use nom::Parser;
-    use nom::branch::alt;
-    use nom::character::complete::{alpha1, digit1};
-    use nom::multi::many1;
-
-    #[test]
-    fn it_works() {
-        let mut choice = many1(alt((alpha1::<&str, nom::error::Error<_>>, digit1)));
-        let choice1 = choice.parse("1a1a1");
-        dbg!(&choice1);
-    }
-}
