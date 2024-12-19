@@ -21,8 +21,8 @@ mod tests{
 
     #[test]
     fn it_works() {
-        let closure = Closure { s: "hello".to_string(), t: "world".to_string() };
+        let closure = Closure { s: "hello_".to_string(), t: "world".to_string() };
         let string = closure();
-        assert_eq!(string, "helloworld".to_string());
+        assert_eq!(string, "hello_world".to_string());
     }
 }
