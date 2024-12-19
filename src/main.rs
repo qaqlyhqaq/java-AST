@@ -1,4 +1,9 @@
 #![feature(str_as_str)]
+#![feature(unboxed_closures)]
+#![feature(fn_traits)]
+#![feature(tuple_trait)]
+
+mod code_block_parser;
 
 use nom::branch::alt;
 use nom::bytes::complete::take_until;
