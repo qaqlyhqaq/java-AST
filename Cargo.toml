@@ -4,4 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-nom = {version = "8.0.0-beta.1"}
+nom = { version = "8.0.0-beta.1" }
+quote = { version = "*" }
+syn = { version = "*" }
