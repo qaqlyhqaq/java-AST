@@ -1,0 +1,11 @@
+[package]
+name = "macro_attribute"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+quote = { version = "*" }
+syn = { version = "*" }
+
+[lib]
+proc-macro = true
