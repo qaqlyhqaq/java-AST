@@ -4,3 +4,4 @@ mod package;
 mod interface;
 mod abstract_class;
 mod annotation;
+mod enumerate_class;

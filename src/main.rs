@@ -87,6 +87,7 @@ fn main() {
         //分号
         terminated( nom::bytes::complete::take_while1(AsChar::is_alphanum),nom::bytes::complete::tag(";")),
     );
+    
     let body_content_parser_2 = map(preceded(take_while2, class_body_content), |element| {
         return format!("查找到一属性值:{:?}",element).leak().as_str();
     });
