@@ -4,9 +4,9 @@
 #![feature(tuple_trait)]
 
 mod code_block_parser;
+mod ast;
 
 use nom::branch::alt;
-use nom::bytes::complete::take_until;
 use nom::bytes::streaming::{tag,take_while1};
 use nom::bytes::take_while;
 use nom::combinator::{map, opt};
@@ -23,10 +23,10 @@ fn main() {
 
     //查找到class 标识
     let (source_code, _) =
-        take_until::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();
+        nom::bytes::complete::take_until::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();
     //解析class 结构体类
     let (source_code, _) =
-        tag::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();
+        nom::bytes::streaming::tag::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();
     //判断是否有分隔符,语法检查
     let (source_code, _) =
         take_while1::<_, &str, nom::error::Error<&str>>(AsChar::is_space)(source_code).unwrap();
@@ -105,10 +105,10 @@ fn main() {
     let end_while = take_while(AsChar::is_space);
     // let end_while = rest;
     let res: IResult<&str, Vec<&str>, nom::error::Error<_>> = delimited(
-        tag("{"),
+        nom::bytes::streaming::tag("{"),
         terminated(
         body_content_parser,
-        tag("}")),
+        nom::bytes::streaming::tag("}")),
         opt(end_while),
     )
     .parse(source_code);
