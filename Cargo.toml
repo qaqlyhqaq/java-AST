@@ -10,4 +10,4 @@ members = [
 
 [dependencies]
 nom = { version = "8.0.0-beta.1" }
-
+macro_attribute = { path = "macro_attribute" }
