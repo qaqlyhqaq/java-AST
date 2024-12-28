@@ -11,7 +11,7 @@ use nom::bytes::streaming::{tag,take_while1};
 use nom::bytes::take_while;
 use nom::combinator::{map, opt};
 use nom::multi::many1;
-use nom::sequence::{delimited, pair, preceded, terminated};
+use nom::sequence::{delimited,  preceded, terminated};
 use nom::Parser;
 use nom::{AsChar, IResult};
 
@@ -49,9 +49,12 @@ fn main() {
         ),
     );
     let body_content_parser = preceded1;
-    let body_content_parser = map(body_content_parser,|x| {
-        return format!("查找到一条注释:{}",x).leak().as_str();
-    });
+    let body_content_parser = map(
+        body_content_parser,
+        |x| {
+            return format!("查找到一条注释:{}",x).leak().as_str();
+        }
+    );
     //直接匹配结尾
     let body_content_parser_1 =nom::bytes::complete::take_until1::<&str, &str, nom::error::Error<&str>>("}");
     //匹配类属性声明字段
