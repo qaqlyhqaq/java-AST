@@ -31,15 +31,6 @@ impl FnMut<()>  for Closure {
 }
 
 
-/*
-    let (source_code, _) =
-        nom::bytes::complete::take_until::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();
- */
-
-
-
-
-
 #[cfg(test)]
 mod tests{
     use crate::code_block_parser::find_class::Closure;
@@ -71,6 +62,16 @@ impl<'a>  FnOnce<(&'a str,)> for FindClass<>
         x
     }
 
+}
+
+
+impl<'a>  FnMut<(&'a str,)> for FindClass<> {
+
+    extern "rust-call" fn call_mut(&mut self, args: (&'a str,)) -> (&'a str,&'a str) {
+        let mut until = nom::bytes::complete::take_until::<&str, &str, nom::error::Error<&str>>(self.class_name.as_str());
+        let x:(&str,&str) = until(args.0.as_str()).unwrap();
+        x
+    }
 }
 
 impl FindClass{
