@@ -60,12 +60,12 @@ pub struct  FindClass<> {
 
 }
 
-impl<'a>  FnOnce<(&'a String,)> for FindClass<>
+impl<'a>  FnOnce<(&'a str,)> for FindClass<>
 {
 
     type Output = (&'a str,&'a str);
 
-    extern "rust-call" fn call_once(self, args: (&'a String,)) -> (&str,&str) {
+    extern "rust-call" fn call_once(self, args: (&'a str,)) -> (&str,&str) {
         let mut until = nom::bytes::complete::take_until::<&str, &str, nom::error::Error<&str>>(self.class_name.as_str());
         let x:(&str,&str) = until(args.0.as_str()).unwrap();
         x
@@ -90,8 +90,8 @@ mod test_find_class{
     #[test]
     fn it_works() {
         let mut find_class = FindClass::new("lyh");
-        let source_code = "start_lyh_end".to_string();
-        let result = find_class(&source_code);
+        let source_code = "start_lyh_end";
+        let result = find_class(source_code);
         assert_eq!(result, ("lyh_end","start_"));
     }
 }
