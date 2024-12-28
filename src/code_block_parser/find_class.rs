@@ -55,6 +55,7 @@ mod tests{
 
 #[derive(Debug,Clone)]
 struct  FindClass<> {
+
     class_name : String,
 
 }
@@ -83,11 +84,14 @@ impl FindClass{
 mod test_find_class{
     use crate::code_block_parser::find_class::{ FindClass};
 
+    /*
+    功能单元测试
+     */
     #[test]
     fn it_works() {
-        let mut closure = FindClass::new("lyh");
-        let string1 = "123 lyh asdf".to_string();
-        let string = closure(&string1);
-        dbg!(string);
+        let mut find_class = FindClass::new("lyh");
+        let source_code = "start_lyh_end".to_string();
+        let result = find_class(&source_code);
+        assert_eq!(result, ("lyh_end","start_"));
     }
 }
