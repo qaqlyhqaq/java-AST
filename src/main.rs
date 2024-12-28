@@ -21,9 +21,13 @@ fn main() {
     let source_code = include_str!("../assets/Simple.java");
     // let source_code = include_str!("../assets/MultiLine.java");
 
+
     //查找到class 标识
     let (source_code, _) =
         FindClass::new("class")(source_code.as_str());
+
+    
+
 
     //解析class 结构体类
     let (source_code, _) =

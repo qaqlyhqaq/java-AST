@@ -37,6 +37,9 @@ impl FindClass{
 
 #[cfg(test)]
 mod test_find_class{
+    use nom::branch::alt;
+    use nom::bytes::complete::tag;
+    use nom::Parser;
     use crate::code_block_parser::find_class::{ FindClass};
 
     /*
@@ -48,5 +51,14 @@ mod test_find_class{
         let source_code = "start_lyh_end";
         let result = find_class(source_code);
         assert_eq!(result, ("lyh_end","start_"));
+    }
+
+    #[test]
+    fn is_nom_use(){
+        let mut choice = alt((tag("class"),tag::<&str, &str, nom::error::Error<&str>>("asdf")));
+
+
+        let choice1 = choice.parse("classasdf");
+        assert!(choice1.is_ok());
     }
 }
