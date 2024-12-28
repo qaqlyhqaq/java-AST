@@ -10,7 +10,6 @@ pub struct  FindClass<> {
 impl<'a>  FnOnce<(&'a str,)> for FindClass<>
 {
 
-    // type Output = (&'a str,&'a str);
     type Output =IResult<&'a str, &'a str, nom::Err<(&'a str,)>>;
 
     extern "rust-call" fn call_once(self, args: (&'a str,)) -> Self::Output {
@@ -31,12 +30,6 @@ impl<'a>  FnMut<(&'a str,)> for FindClass<> {
     }
 }
 
-// pub trait Fn<Args: Tuple>: FnMut<Args> {
-//     /// Performs the call operation.
-//     #[unstable(feature = "fn_traits", issue = "29625")]
-//     extern "rust-call" fn call(&self, args: Args) -> Self::Output;
-// }
-
 impl<'a>  Fn<(&'a str,)> for FindClass<> {
     extern "rust-call" fn call(&self, args: (&'a str,)) -> Self::Output {
         let mut until = nom::bytes::complete::take_until::<&str, &str, nom::error::Error<&str>>(self.class_name.as_str());
@@ -46,23 +39,11 @@ impl<'a>  Fn<(&'a str,)> for FindClass<> {
 
 }
 
-// impl<'a> nom::Parser<&'a str> for FindClass {
-//     type Output = ();
-//     type Error = ();
-//
-//     fn process<OM: OutputMode>(&mut self, input: &'a str) -> PResult<OM, &'a str, Self::Output, Self::Error> {
-//         todo!()
-//     }
-// }
-
-
 impl FindClass{
     pub fn new(class_name : &str) -> FindClass{
         FindClass{class_name:class_name.to_string()}
     }
 }
-
-
 
 #[cfg(test)]
 mod test_find_class{

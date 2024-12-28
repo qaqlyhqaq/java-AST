@@ -24,7 +24,7 @@ fn main() {
 
     //查找到class 标识
     let (source_code, _) =
-        FindClass::new("class")(source_code.as_str());
+        FindClass::new("class")(source_code.as_str()).unwrap();
 
     
 
