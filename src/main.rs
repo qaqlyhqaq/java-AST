@@ -14,7 +14,7 @@ use nom::multi::many1;
 use nom::sequence::{delimited,  preceded, terminated};
 use nom::Parser;
 use nom::{AsChar, IResult};
-
+use crate::code_block_parser::find_class::FindClass;
 
 fn main() {
 
@@ -22,9 +22,10 @@ fn main() {
     // let source_code = include_str!("../assets/MultiLine.java");
 
     //查找到class 标识
+    let source_code = source_code.to_string();
     let (source_code, _) =
-        nom::bytes::complete::take_until::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();
-    
+        FindClass::new("class")(&source_code);
+
     //解析class 结构体类
     let (source_code, _) =
         nom::bytes::streaming::tag::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();

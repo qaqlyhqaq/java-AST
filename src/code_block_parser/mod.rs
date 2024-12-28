@@ -1,1 +1,1 @@
-mod find_class;
+pub mod find_class;

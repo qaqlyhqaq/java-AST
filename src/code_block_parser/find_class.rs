@@ -54,7 +54,7 @@ mod tests{
 
 
 #[derive(Debug,Clone)]
-struct  FindClass<> {
+pub struct  FindClass<> {
 
     class_name : String,
 
