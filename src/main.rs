@@ -24,6 +24,7 @@ fn main() {
     //查找到class 标识
     let (source_code, _) =
         nom::bytes::complete::take_until::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();
+    
     //解析class 结构体类
     let (source_code, _) =
         nom::bytes::streaming::tag::<&str, &str, nom::error::Error<&str>>("class")(source_code).unwrap();
