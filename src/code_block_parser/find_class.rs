@@ -62,11 +62,32 @@ struct  FindClass<> {
 impl<'a>  FnOnce<(&'a String,)> for FindClass<>
 {
 
-    type Output = String;
+    type Output = (&'a str,&'a str);
 
-    extern "rust-call" fn call_once(self, args: (&'a String,)) -> Self::Output {
+    extern "rust-call" fn call_once(self, args: (&'a String,)) -> (&str,&str) {
         let mut until = nom::bytes::complete::take_until::<&str, &str, nom::error::Error<&str>>(self.class_name.as_str());
-        until(args.0.as_str()).unwrap().1.to_string()
+        let x:(&str,&str) = until(args.0.as_str()).unwrap();
+        x
     }
 
+}
+
+impl FindClass{
+    pub fn new(class_name : &str) -> FindClass{
+        FindClass{class_name:class_name.to_string()}
+    }
+}
+
+
+#[cfg(test)]
+mod test_find_class{
+    use crate::code_block_parser::find_class::{ FindClass};
+
+    #[test]
+    fn it_works() {
+        let mut closure = FindClass::new("lyh");
+        let string1 = "123 lyh asdf".to_string();
+        let string = closure(&string1);
+        dbg!(string);
+    }
 }
